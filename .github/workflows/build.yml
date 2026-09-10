@@ -34,7 +34,7 @@ jobs:
 
       - name: check version
         run: |
-          [ "$(curl -fsSL https://naktix.github.io/desmume-debian/dists/trixie/main/binary-amd64/Packages 2>/dev/null | grep -A1 '^Package: desmume-gtk$' | grep '^Version:' | cut -d' ' -f2)" != "$(echo '${{ steps.release.outputs.tag }}' | sed 's/^release_//; s/_/./g')-1" ]
+          [ "$(curl -fsSL https://naktix.github.io/desmume-debian/dists/trixie/main/binary-amd64/Packages 2>/dev/null | grep -A20 '^Package: desmume-gtk$' | grep -m1 '^Version:' | cut -d' ' -f2)" != "$(echo '${{ steps.release.outputs.tag }}' | sed 's/^release_//; s/_/./g')-1" ]
 
       - name: install build dependencies
         run: |
