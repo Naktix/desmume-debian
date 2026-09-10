@@ -34,7 +34,7 @@ jobs:
 
       - name: check version
         run: |
-          [ "$(curl -fsSL https://naktix.github.io/desmume-debian/dists/trixie/main/binary-amd64/Packages 2>/dev/null | grep -A1 '^Package: desmume$' | grep '^Version:' | cut -d' ' -f2)" != "${{ steps.release.outputs.tag }}-1" ]
+          [ "$(curl -fsSL https://naktix.github.io/desmume-debian/dists/trixie/main/binary-amd64/Packages 2>/dev/null | grep -A1 '^Package: desmume$' | grep '^Version:' | cut -d' ' -f2)" != "$(echo '${{ steps.release.outputs.tag }}' | sed 's/^release_//; s/_/./g')-1" ]
 
       - name: install build dependencies
         run: |
@@ -64,9 +64,9 @@ jobs:
           cd desmume
 
           cat > debian/changelog <<EOF
-          desmume (${${{ steps.release.outputs.tag }}#v}-1) trixie; urgency=medium
+          desmume ($(echo "${{ steps.release.outputs.tag }}" | sed 's/^release_//; s/_/./g')-1) trixie; urgency=medium
 
-            * Package DeSmuME ${{ steps.release.outputs.tag }}.
+            * Package DeSmuME $(echo "${{ steps.release.outputs.tag }}" | sed 's/^release_//; s/_/./g').
 
            -- Nils Brockelmann <nils.b@tutamail.com>  $(date -R)
           EOF
