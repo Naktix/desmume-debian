@@ -65,7 +65,7 @@ jobs:
           cd desmume
 
           cat > debian/changelog <<EOF
-          desmume -gtk($(echo "${{ steps.release.outputs.tag }}" | sed 's/^release_//; s/_/./g')-1) trixie; urgency=medium
+          desmume ($(echo "${{ steps.release.outputs.tag }}" | sed 's/^release_//; s/_/./g')-1) trixie; urgency=medium
 
             * Package DeSmuME $(echo "${{ steps.release.outputs.tag }}" | sed 's/^release_//; s/_/./g').
 
