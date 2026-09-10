@@ -5,7 +5,8 @@
 
 override_dh_auto_configure:
 	cd desmume/src/frontend/posix && \
-		CXXFLAGS="$(CXXFLAGS) -Wno-error=format-security" \
+		CXXFLAGS="$(CXXFLAGS) -Wno-error=format-security -D_POSIX_C_SOURCE=200809L" \
+		CFLAGS="$(CFLAGS) -D_POSIX_C_SOURCE=200809L" \
 		meson setup ../../../../debian/build \
 		--prefix=/usr \
 		--buildtype=release
