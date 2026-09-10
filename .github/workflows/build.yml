@@ -47,6 +47,7 @@ jobs:
             meson \
             ninja-build \
             pkg-config \
+            libglib2.0-dev \
             libgtk-3-dev \
             libsdl2-dev \
             libpcap-dev \
@@ -79,8 +80,10 @@ jobs:
       - name: import repository signing key
         env:
           GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
+          GPG_KEY_ID: ${{ secrets.GPG_KEY_ID }}
         run: |
           echo "$GPG_PRIVATE_KEY" | gpg --batch --import
+          gpg --export "$GPG_KEY_ID" > desmume.gpg
 
       - name: build apt repository
         env:
