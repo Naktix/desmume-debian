@@ -1,0 +1,126 @@
+name: build and publish .deb
+
+on:
+  push:
+  workflow_dispatch:
+  schedule:
+    - cron: "37 5 * * *"
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    container:
+      image: debian:trixie
+
+    steps:
+      - name: checkout packaging repository
+        uses: actions/checkout@v4
+
+      - name: determine latest stable desmume release
+        id: release
+        run: |
+          apt-get update
+          apt-get install -y \
+            curl \
+            jq
+
+          echo "tag=$(curl -fsSL https://api.github.com/repos/TASEmulators/desmume/releases/latest | jq -r '.tag_name')" >> "$GITHUB_OUTPUT"
+
+      - name: check version
+        run: |
+          [ "$(curl -fsSL https://naktix.github.io/desmume-debian/dists/trixie/main/binary-amd64/Packages 2>/dev/null | grep -A1 '^Package: desmume$' | grep '^Version:' | cut -d' ' -f2)" != "${{ steps.release.outputs.tag }}-1" ]
+
+      - name: install build dependencies
+        run: |
+          apt-get update
+          apt-get install -y \
+            build-essential \
+            debhelper-compat \
+            fakeroot \
+            git \
+            meson \
+            ninja-build \
+            pkg-config \
+            libgtk-3-dev \
+            libsdl2-dev \
+            libpcap-dev \
+            libglu1-mesa-dev \
+            libx11-dev \
+            libxext-dev \
+            zlib1g-dev \
+            reprepro \
+            gnupg
+
+      - name: clone repository and build package
+        run: |
+          git clone --recursive --branch "${{ steps.release.outputs.tag }}" https://github.com/TASEmulators/desmume desmume
+          cp -a debian desmume/debian
+          cd desmume
+
+          cat > debian/changelog <<EOF
+          desmume (${${{ steps.release.outputs.tag }}#v}-1) trixie; urgency=medium
+
+            * Package DeSmuME ${{ steps.release.outputs.tag }}.
+
+           -- Nils Brockelmann <nils.b@tutamail.com>  $(date -R)
+          EOF
+
+          dpkg-buildpackage -us -uc -b
+
+          cp "$(find .. -maxdepth 1 -type f -name 'desmume_*.deb' ! -name '*dbgsym*' -print -quit)" \
+            "$GITHUB_WORKSPACE/desmume.deb"
+
+      - name: import repository signing key
+        env:
+          GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
+        run: |
+          echo "$GPG_PRIVATE_KEY" | gpg --batch --import
+
+      - name: build apt repository
+        env:
+          GPG_KEY_ID: ${{ secrets.GPG_KEY_ID }}
+        run: |
+          mkdir -p apt-repo/conf
+
+          cat > apt-repo/conf/distributions <<EOF
+          Origin: Nils Brockelmann
+          Label: DeSmuME
+          Codename: trixie
+          Suite: trixie
+          Architectures: amd64
+          Components: main
+          Description: DeSmuME packages
+          SignWith: $GPG_KEY_ID
+          EOF
+
+          reprepro --basedir apt-repo includedeb trixie ./desmume.deb
+
+          cp desmume.gpg apt-repo/desmume.gpg
+          touch apt-repo/.nojekyll
+
+      - name: configure github pages
+        uses: actions/configure-pages@v5
+
+      - name: Upload APT repository for GitHub Pages
+        uses: actions/upload-pages-artifact@v4
+        with:
+          path: apt-repo
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
+    steps:
+      - name: deploy apt repository
+        id: deployment
+        uses: actions/deploy-pages@v4

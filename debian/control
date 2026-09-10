@@ -1,0 +1,26 @@
+Source: desmume
+Section: games
+Priority: optional
+Maintainer: Nils Brockelmann
+Build-Depends:
+ debhelper-compat (= 13),
+ meson,
+ ninja-build,
+ pkg-config,
+ libgtk-3-dev,
+ libsdl2-dev,
+ libpcap-dev,
+ libglu1-mesa-dev,
+ libx11-dev,
+ libxext-dev,
+ zlib1g-dev
+Standards-Version: 4.7.0
+Homepage: https://desmume.org/
+
+Package: desmume
+Architecture: amd64
+Depends:
+ ${shlibs:Depends},
+ ${misc:Depends}
+Description: Nintendo DS emulator
+ DeSmuME is an open-source Nintendo DS emulator.

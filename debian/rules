@@ -1,0 +1,13 @@
+#!/usr/bin/make -f
+
+%:
+	dh $@
+
+override_dh_auto_configure:
+	cd desmume/src/frontend/posix && meson setup ../../../../debian/build
+
+override_dh_auto_build:
+	ninja -C debian/build
+
+override_dh_auto_install:
+	DESTDIR=$(CURDIR)/debian/desmume ninja -C debian/build install
