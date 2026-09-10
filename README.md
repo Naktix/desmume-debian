@@ -46,4 +46,4 @@ Update the package lists:
 sudo apt update
 ```
 
-> **Disclaimer:** This is an unofficial repository and is not affiliated with, endorsed by, or officially supported by the DeSmuME Project.
+> **Disclaimer:** This is an unofficial repository and is not affiliated with, endorsed by, or officially supported by the DeSmuME Emulator Project.
