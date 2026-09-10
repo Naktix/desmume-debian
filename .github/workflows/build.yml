@@ -74,8 +74,8 @@ jobs:
 
           dpkg-buildpackage -us -uc -b
 
-          cp "$(find .. -maxdepth 1 -type f -name 'desmume_*.deb' ! -name '*dbgsym*' -print -quit)" \
-            "$GITHUB_WORKSPACE/desmume.deb"
+          cp "$(find .. -maxdepth 1 -type f -name 'desmume-gtk_*.deb' ! -name '*dbgsym*' -print -quit)" \
+            "$GITHUB_WORKSPACE/desmume-gtk.deb"
 
       - name: import repository signing key
         env:
@@ -102,7 +102,7 @@ jobs:
           SignWith: $GPG_KEY_ID
           EOF
 
-          reprepro --basedir apt-repo includedeb trixie ./desmume.deb
+          reprepro --basedir apt-repo includedeb trixie ./desmume-gtk.deb
 
           cp desmume.gpg apt-repo/desmume.gpg
           touch apt-repo/.nojekyll
