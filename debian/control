@@ -17,7 +17,7 @@ Build-Depends:
 Standards-Version: 4.7.0
 Homepage: https://desmume.org/
 
-Package: desmume
+Package: desmume-gtk
 Architecture: amd64
 Depends:
  ${shlibs:Depends},
