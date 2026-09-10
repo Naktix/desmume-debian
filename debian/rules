@@ -5,10 +5,12 @@
 
 override_dh_auto_configure:
 	cd desmume/src/frontend/posix && \
-		meson setup ../../../../debian/build --prefix=/usr --buildtype=release
+		meson setup ../../../../debian/build \
+		--prefix=/usr \
+		--buildtype=release
 
 override_dh_auto_build:
-	ninja -C debian/build -v
+	ninja -C debian/build -v -j1
 
 override_dh_auto_install:
 	DESTDIR=$(CURDIR)/debian/desmume \
