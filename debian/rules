@@ -15,5 +15,5 @@ override_dh_auto_build:
 	ninja -C debian/build -v -j1
 
 override_dh_auto_install:
-	DESTDIR=$(CURDIR)/debian/desmume \
+	DESTDIR=$(CURDIR)/debian/desmume-gtk \
 		ninja -C debian/build install

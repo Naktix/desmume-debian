@@ -32,9 +32,9 @@ jobs:
 
           echo "tag=$(curl -fsSL https://api.github.com/repos/TASEmulators/desmume/releases/latest | jq -r '.tag_name')" >> "$GITHUB_OUTPUT"
 
-      #  - name: check version
-      #    run: |
-      #      [ "$(curl -fsSL https://naktix.github.io/desmume-debian/dists/trixie/main/binary-amd64/Packages 2>/dev/null | grep -A1 '^Package: desmume$' | grep '^Version:' | cut -d' ' -f2)" != "$(echo '${{ steps.release.outputs.tag }}' | sed 's/^release_//; s/_/./g')-1" ]
+      #- name: check version
+      #  run: |
+      #    [ "$(curl -fsSL https://naktix.github.io/desmume-debian/dists/trixie/main/binary-amd64/Packages 2>/dev/null | grep -A1 '^Package: desmume-gtk$' | grep '^Version:' | cut -d' ' -f2)" != "$(echo '${{ steps.release.outputs.tag }}' | sed 's/^release_//; s/_/./g')-1" ]
 
       - name: install build dependencies
         run: |
@@ -65,7 +65,7 @@ jobs:
           cd desmume
 
           cat > debian/changelog <<EOF
-          desmume ($(echo "${{ steps.release.outputs.tag }}" | sed 's/^release_//; s/_/./g')-1) trixie; urgency=medium
+          desmume -gtk($(echo "${{ steps.release.outputs.tag }}" | sed 's/^release_//; s/_/./g')-1) trixie; urgency=medium
 
             * Package DeSmuME $(echo "${{ steps.release.outputs.tag }}" | sed 's/^release_//; s/_/./g').
 
